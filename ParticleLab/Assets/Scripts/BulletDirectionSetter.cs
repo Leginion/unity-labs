@@ -6,6 +6,19 @@ public class BulletDirectionSetter : MonoBehaviour
     [SerializeField] private LayerMask enemyLayer;
     [SerializeField] private float detectionRange = 50f;
 
+    void Awake()
+    {
+        // player 未赋值时退回自身，避免每次射击都抛 NullReferenceException
+        if (player == null)
+        {
+            player = transform;
+            Debug.LogWarning("[BulletDirectionSetter] Player 未赋值，已回退为自身 Transform。", this);
+        }
+
+        if (enemyLayer.value == 0)
+            Debug.LogWarning("[BulletDirectionSetter] Enemy Layer 未设置，子弹不会瞄准任何敌人。", this);
+    }
+
     public void OnBulletSpawned(GameObject bullet)
     {
         if (bullet == null || player == null) return;

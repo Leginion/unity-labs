@@ -27,7 +27,8 @@ public class Enemy : MonoBehaviour
         enemyRenderer = GetComponent<Renderer>();
         if (enemyRenderer != null)
         {
-            originalColor = enemyRenderer.material.color;
+            // 用 sharedMaterial 读色，避免 Awake 阶段就为每个敌人克隆一份材质实例
+            originalColor = enemyRenderer.sharedMaterial.color;
         }
     }
 
@@ -63,6 +64,17 @@ public class Enemy : MonoBehaviour
     {
         isActive = false;
         gameObject.SetActive(false);
+    }
+
+    /// <summary>重生时重置状态：SetActive(false) 会中断闪烁协程，需手动复原颜色和血量。</summary>
+    public void ResetState()
+    {
+        currentHealth = maxHealth;
+        isFlashing = false;
+        if (enemyRenderer != null)
+        {
+            enemyRenderer.material.color = originalColor;
+        }
     }
 
     public void TakeDamage(int damage)

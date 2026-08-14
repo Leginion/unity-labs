@@ -11,6 +11,16 @@ public class PlayerController : MonoBehaviour
     private float shootTimer;
     private Vector3 moveDirection;
 
+    void Awake()
+    {
+        if (bulletPrefab == null)
+            Debug.LogError("[PlayerController] Bullet Prefab 未赋值，不会发射任何子弹。", this);
+        if (onBulletSpawnEvent == null)
+            Debug.LogWarning("[PlayerController] On Bullet Spawn Event 未赋值，子弹不会自动瞄准敌人。", this);
+        if (shootInterval <= 0f)
+            Debug.LogWarning("[PlayerController] Shoot Interval 为 0，每个物理帧都会生成子弹。", this);
+    }
+
     void Update()
     {
         HandleInput();
@@ -59,13 +69,12 @@ public class PlayerController : MonoBehaviour
 
     void SpawnBullet()
     {
-        if (bulletPrefab != null)
-        {
-            Vector3 spawnPos = bulletSpawnPoint != null ? bulletSpawnPoint.position : transform.position;
-            GameObject bullet = Instantiate(bulletPrefab, spawnPos, Quaternion.identity);
-            
-            if (onBulletSpawnEvent != null)
-                onBulletSpawnEvent.Raise(bullet);
-        }
+        if (bulletPrefab == null) return;
+
+        Vector3 spawnPos = bulletSpawnPoint != null ? bulletSpawnPoint.position : transform.position;
+        GameObject bullet = Instantiate(bulletPrefab, spawnPos, Quaternion.identity);
+
+        if (onBulletSpawnEvent != null)
+            onBulletSpawnEvent.Raise(bullet);
     }
 }

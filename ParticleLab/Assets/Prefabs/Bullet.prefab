@@ -151,7 +151,7 @@ MonoBehaviour:
   lifetime: 5
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
 --- !u!96 &1977909685417209458
 TrailRenderer:
   serializedVersion: 3
@@ -173,7 +173,7 @@ TrailRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: a161f9431dc925540a3fd32bca089409, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

@@ -24,6 +24,11 @@ public class SceneSetupTool : EditorWindow
             CreatePlayer();
         }
 
+        if (GUILayout.Button("2.5. Create Spawn Area"))
+        {
+            CreateSpawnArea();
+        }
+
         if (GUILayout.Button("3. Create Bullet Prefab Template"))
         {
             CreateBulletTemplate();
@@ -49,7 +54,7 @@ public class SceneSetupTool : EditorWindow
             CreateGameEvent();
         }
 
-        if (GUILayout.Button("8. Setup Camera Follow"))
+        if (GUILayout.Button("8. Setup Camera Follow (Perspective)"))
         {
             SetupCamera();
         }
@@ -86,11 +91,34 @@ public class SceneSetupTool : EditorWindow
             so.ApplyModifiedProperties();
         }
 
+        mainCam.orthographic = false;
+        mainCam.fieldOfView = 60f;
         mainCam.transform.position = new Vector3(0, 20, 0);
         mainCam.transform.rotation = Quaternion.Euler(90, 0, 0);
 
         Selection.activeGameObject = mainCam.gameObject;
-        Debug.Log("Camera follow setup complete. Orthographic mode enabled.");
+        Debug.Log("Camera follow setup complete. Perspective mode enabled (FOV 60).");
+    }
+
+    /// <summary>
+    /// 本项目是 URP，"Sprites/Default" 和 "Particles/Standard Unlit" 都是 Built-in RP 的
+    /// shader，Shader.Find 会返回 null 并导致材质丢失（渲染成紫色）。这里按 URP 优先取。
+    /// </summary>
+    static Material CreateUnlitMaterial(Color color)
+    {
+        Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit")
+                     ?? Shader.Find("Universal Render Pipeline/Unlit")
+                     ?? Shader.Find("Sprites/Default");
+
+        if (shader == null)
+        {
+            Debug.LogError("[SceneSetupTool] 找不到可用的 unlit shader，材质会显示为紫色。");
+            return null;
+        }
+
+        var mat = new Material(shader) { color = color };
+        if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", color);
+        return mat;
     }
 
     void CreateGround()
@@ -122,6 +150,31 @@ public class SceneSetupTool : EditorWindow
         Debug.Log("Player created. Assign bullet prefab and event channel in Inspector.");
     }
 
+    void CreateSpawnArea()
+    {
+        GameObject spawnArea = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        spawnArea.name = "SpawnArea";
+        spawnArea.transform.position = new Vector3(0, 0.01f, 0);
+        spawnArea.transform.localScale = new Vector3(50, 1, 50);
+
+        var renderer = spawnArea.GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            Material mat = CreateUnlitMaterial(new Color(1f, 0f, 0f, 0.2f));
+            if (mat != null)
+            {
+                if (mat.HasProperty("_Surface")) mat.SetFloat("_Surface", 1f);
+                renderer.sharedMaterial = mat;
+            }
+        }
+
+        var collider = spawnArea.GetComponent<Collider>();
+        if (collider != null) DestroyImmediate(collider);
+
+        Selection.activeGameObject = spawnArea;
+        Debug.Log("SpawnArea created (red semi-transparent plane). Assign to EnemyManager.spawnArea.");
+    }
+
     void CreateBulletTemplate()
     {
         GameObject bullet = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -141,7 +194,7 @@ public class SceneSetupTool : EditorWindow
         trail.time = 0.3f;
         trail.startWidth = 0.1f;
         trail.endWidth = 0.01f;
-        trail.material = new Material(Shader.Find("Sprites/Default"));
+        trail.material = CreateUnlitMaterial(Color.yellow);
         trail.startColor = Color.yellow;
         trail.endColor = Color.red;
 
@@ -188,7 +241,7 @@ public class SceneSetupTool : EditorWindow
         shape.radius = 0.3f;
 
         var renderer = ps.GetComponent<ParticleSystemRenderer>();
-        renderer.material = new Material(Shader.Find("Particles/Standard Unlit"));
+        renderer.material = CreateUnlitMaterial(Color.white);
 
         Selection.activeGameObject = hitEffect;
         Debug.Log("Hit effect created. Save as prefab and assign to Enemy prefab.");
@@ -239,7 +292,7 @@ public class SceneSetupTool : EditorWindow
         sizeOverLifetime.size = new ParticleSystem.MinMaxCurve(1f, AnimationCurve.Linear(0, 1, 1, 0));
 
         var renderer = ps.GetComponent<ParticleSystemRenderer>();
-        renderer.material = new Material(Shader.Find("Particles/Standard Unlit"));
+        renderer.material = CreateUnlitMaterial(Color.white);
 
         Selection.activeGameObject = deathEffect;
         Debug.Log("Death effect created. Save as prefab and assign to Enemy prefab.");

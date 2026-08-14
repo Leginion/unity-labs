@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6098366919494114977}
   - component: {fileID: 3504477533039097388}
-  - component: {fileID: 7699390335067272411}
   - component: {fileID: 6340710261507335718}
   - component: {fileID: 5763100681791579329}
   - component: {fileID: 932296662103448049}
@@ -44,27 +43,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6552195201969364099}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!65 &7699390335067272411
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6552195201969364099}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &6340710261507335718
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -143,6 +121,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 3
-  hitEffectPrefab: {fileID: 0}
-  deathEffectPrefab: {fileID: 0}
+  hitEffectPrefab: {fileID: 3294454245348191801, guid: 1ed421fb2621b3743bf92fb4bc55e3bd,
+    type: 3}
+  deathEffectPrefab: {fileID: 3269996391579198998, guid: 09abe4acd9148ef4f9718137b5e64973,
+    type: 3}
   onEnemyDeathEvent: {fileID: 0}
+  chaseSpeed: 2
+  flashColor: {r: 1, g: 0, b: 0, a: 1}
+  flashDuration: 0.1
